@@ -5,6 +5,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
+# TODO: Use getopt instead?
+#       That'll let me do things like configure verbose output, etc.
 FB_USER = sys.argv[1]
 FB_PASS = sys.argv[2]
 
@@ -39,22 +41,24 @@ except:
     pass
 
 # Scroll until we can scroll no more!
+friends_seen = 0
 while True:
     page_height = getPageHeight(driver)
-    driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
-    time.sleep(3) # Give it a couple seconds to load
+    friends_shown = driver.find_elements_by_css_selector('.uiProfileBlockContent a:not(.uiLinkSubtle)')
+    for friend in friends_shown[friends_seen:]:
+        webdriver.ActionChains(driver).move_to_element(friend).perform()
+        try:
+            el = WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, 'HovercardFollowButton')))
+            btn = el.find_element_by_link_text('Following')
+            btn.click()
+        except:
+            pass # We're not following this person so forget it.
+        finally:
+            friends_seen += 1
+    time.sleep(3) # Give it a few seconds to load.
     new_page_height = getPageHeight(driver)
     if new_page_height == page_height:
         break
-
-friends_shown = driver.find_elements_by_css_selector('.uiProfileBlockContent a:not(.uiLinkSubtle)')
-for friend in friends_shown:
-    webdriver.ActionChains(driver).move_to_element(friend).perform()
-    try:
-        el = WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.LINK_TEXT, 'Following')))
-        el.click()
-    except:
-        pass # We're not following this person so forget it.
 
 # And we're done! :)
 driver.quit()
