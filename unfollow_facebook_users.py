@@ -47,6 +47,7 @@ while True:
     friends_shown = driver.find_elements_by_css_selector('.uiProfileBlockContent a:not(.uiLinkSubtle)')
     for friend in friends_shown[friends_seen:]:
         webdriver.ActionChains(driver).move_to_element(friend).perform()
+        time.sleep(1) # Let Facebook load this hovercard, remove the old one.
         try:
             el = WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, 'HovercardFollowButton')))
             btn = el.find_element_by_link_text('Following')
