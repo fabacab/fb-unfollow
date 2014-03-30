@@ -19,7 +19,7 @@ def clickThruCheckpoints (driver):
     try:
         driver.find_element_by_css_selector('[name="name_action_selected"][value="dont_save"]').click()
         driver.find_element_by_id('checkpointSubmitButton').click()
-    except:
+    except Exception:
         driver.find_element_by_id('checkpointSubmitButton').click()
         driver.find_element_by_id('checkpointSecondaryButton').click() # "This is Okay"
         driver.find_element_by_css_selector('[name="name_action_selected"][value="dont_save"]').click()
@@ -37,7 +37,7 @@ if 'Content Not Found | Facebook' == driver.title:
 try:
     while driver.find_element_by_id('checkpointSubmitButton'):
         clickThruCheckpoints(driver)
-except:
+except Exception:
     pass
 
 # Scroll until we can scroll no more!
@@ -52,7 +52,7 @@ while True:
             el = WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, 'HovercardFollowButton')))
             btn = el.find_element_by_link_text('Following')
             btn.click()
-        except:
+        except Exception:
             pass # We're not following this person so forget it.
         finally:
             friends_seen += 1
